@@ -4,13 +4,13 @@ import os
 from datetime import datetime
 
 # ============================================================
-# 1. VIP SAYFA YAPILANDIRMASI
+# 1. VIP SAYFA YAPILANDIRMASI  (Sidebar YOK!)
 # ============================================================
 st.set_page_config(
     page_title="TESKON | Sovereign Executive Suite",
     page_icon="👑",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # ============================================================
@@ -18,32 +18,28 @@ st.set_page_config(
 # ============================================================
 st.markdown("""
 <style>
-    /* Streamlit üst menü / footer / toolbar gizle — sidebar aç-kapa butonunu KORU */
+    /* Streamlit chrome (menü, footer, toolbar) tamamen gizle */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     div[data-testid="stStatusWidget"] {display: none !important;}
     div[data-testid="stToolbar"] {display: none !important;}
     button[title="View app in Streamlit Community Cloud"] {display: none !important;}
+    div[data-testid="stDecoration"] {display: none !important;}
 
-    header {
+    /* Header tamamen gizle - sidebar olmadığı için gerek yok */
+    header[data-testid="stHeader"] {
         background: transparent !important;
         box-shadow: none !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        display: none !important;
     }
-    .stAppHeader { background: transparent !important; }
+    .stAppHeader { display: none !important; }
 
-    /* Kenar çubuğu aç/kapa butonu (mobil dahil) her koşulda görünür kalsın */
-    button[data-testid="collapsedControl"],
-    div[data-testid="collapsedControl"],
-    [data-testid="stSidebarCollapsedControl"],
-    [data-testid="stSidebarCollapseButton"],
-    button[aria-label="Open sidebar"],
-    button[aria-label="Close sidebar"] {
-        visibility: visible !important;
-        display: flex !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
-        z-index: 999999 !important;
-    }
+    /* Sidebar'ı tamamen kaldır */
+    section[data-testid="stSidebar"] { display: none !important; }
+    button[data-testid="collapsedControl"] { display: none !important; }
+    [data-testid="stSidebarCollapsedControl"] { display: none !important; }
 
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
@@ -52,6 +48,11 @@ st.markdown("""
         background: radial-gradient(circle at 50% -20%, #1a160d 0%, #08090a 60%, #030405 100%);
         color: #e5e7eb;
         font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .main .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+        max-width: 1400px !important;
     }
 
     ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -69,12 +70,6 @@ st.markdown("""
     .fade-in.delay-3 { animation-delay: 0.36s; }
     .fade-in.delay-4 { animation-delay: 0.48s; }
 
-    section[data-testid="stSidebar"] {
-        background: rgba(10, 12, 16, 0.9) !important;
-        backdrop-filter: blur(20px);
-        border-right: 1px solid rgba(212, 175, 55, 0.15) !important;
-    }
-
     /* ===== ALTIN PARÇACIK ARKAPLANI ===== */
     @keyframes twinkle {
         0%, 100% { opacity: 0.15; transform: scale(0.8); }
@@ -91,7 +86,7 @@ st.markdown("""
         animation: twinkle 3.5s infinite ease-in-out;
     }
 
-    /* ===== ALTIN BALONLAR (kutlama sayfası) ===== */
+    /* ===== BALONLAR ===== */
     @keyframes floatBalloon {
         0% { transform: translateY(100vh) rotate(0deg); opacity: 0.9; }
         100% { transform: translateY(-120vh) rotate(20deg); opacity: 0; }
@@ -117,23 +112,134 @@ st.markdown("""
     .b4 { left: 91%; animation-duration: 11s; animation-delay: 3s; width: 46px; height: 56px; }
     .b5 { left: 48%; animation-duration: 12s; animation-delay: 4.5s; }
 
-    /* ===== ÜST DURUM ŞERİDİ ===== */
+    /* ===== HERO HEADER (Sayfa Ortası) ===== */
+    .hero-header {
+        text-align: center;
+        padding: 30px 20px 10px 20px;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 10;
+    }
+    .hero-crown {
+        font-size: 52px;
+        margin-bottom: 8px;
+        filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.6));
+        animation: crownFloat 4s ease-in-out infinite;
+    }
+    @keyframes crownFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+    }
+    .hero-title {
+        font-family: 'Cinzel', serif;
+        font-size: 42px;
+        font-weight: 900;
+        letter-spacing: 8px;
+        background: linear-gradient(180deg, #ffffff 0%, #dfb76c 60%, #d4af37 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
+        margin-bottom: 6px;
+    }
+    .hero-sub {
+        font-family: 'Cormorant Garamond', serif;
+        font-style: italic;
+        font-size: 16px;
+        color: #9ca3af;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        margin-bottom: 18px;
+    }
+    .hero-nav-label {
+        display: inline-block;
+        font-family: 'Cinzel', serif;
+        font-size: 11px;
+        letter-spacing: 6px;
+        color: #d4af37;
+        text-transform: uppercase;
+        padding: 8px 24px;
+        border-top: 1px solid rgba(212, 175, 55, 0.4);
+        border-bottom: 1px solid rgba(212, 175, 55, 0.4);
+        margin-bottom: 20px;
+    }
+
+    /* ===== YATAY NAVİGASYON (RADIO) ===== */
+    div[data-testid="stRadio"] > label { display: none !important; }
+    div[data-testid="stRadio"] div[role="radiogroup"] {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        margin-bottom: 20px !important;
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] label {
+        background: rgba(18, 21, 28, 0.7) !important;
+        border: 1px solid rgba(212, 175, 55, 0.3) !important;
+        border-radius: 12px !important;
+        padding: 10px 20px !important;
+        margin: 0 !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        font-size: 13px !important;
+        color: #d1d5db !important;
+        letter-spacing: 0.3px !important;
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] label:hover {
+        border-color: rgba(212, 175, 55, 0.85) !important;
+        background: rgba(212, 175, 55, 0.1) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(212, 175, 55, 0.2);
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
+        background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 40%, #b38728 100%) !important;
+        border-color: #fcf6ba !important;
+        color: #000 !important;
+        box-shadow: 0 8px 24px rgba(212, 175, 55, 0.45);
+        transform: translateY(-2px);
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) p,
+    div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) div {
+        color: #000 !important;
+        font-weight: 700 !important;
+    }
+    /* Radio içindeki yuvarlak daireyi gizle */
+    div[data-testid="stRadio"] div[role="radiogroup"] label > div:first-child {
+        display: none !important;
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] input[type="radio"] {
+        display: none !important;
+    }
+    /* Radio label içindeki metin paragraph */
+    div[data-testid="stRadio"] div[role="radiogroup"] label p {
+        color: #d1d5db !important;
+        font-size: 13px !important;
+        margin: 0 !important;
+        white-space: nowrap !important;
+    }
+
+    /* ===== STATUS STRIP (Ortada) ===== */
     .status-strip {
-        display: flex; justify-content: space-between; align-items: center;
+        display: flex; justify-content: center; align-items: center; gap: 22px;
         background: rgba(212, 175, 55, 0.06);
         border: 1px solid rgba(212, 175, 55, 0.18);
-        border-radius: 14px; padding: 10px 22px; margin-bottom: 22px;
-        letter-spacing: 1px; font-size: 11.5px; color: #d4af37;
+        border-radius: 14px; padding: 12px 26px;
+        margin: 0 auto 26px auto;
+        letter-spacing: 1.5px; font-size: 11.5px; color: #d4af37;
         text-transform: uppercase; backdrop-filter: blur(12px);
+        max-width: 700px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
     }
-    .status-strip span.dim { color: #8b8f98; font-weight: 400; }
+    .status-strip .dim { color: #8b8f98; }
     .pulse-dot {
         display: inline-block; width: 7px; height: 7px; border-radius: 50%;
-        background: #10b981; margin-right: 6px;
+        background: #10b981; margin-right: 8px;
         box-shadow: 0 0 8px 2px rgba(16, 185, 129, 0.7);
         animation: pulseDot 1.8s infinite;
+        vertical-align: middle;
     }
     @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+    .status-sep { color: rgba(212, 175, 55, 0.4); }
 
     /* ===== BANNER ===== */
     .imperial-banner {
@@ -199,8 +305,9 @@ st.markdown("""
     .section-title {
         font-family: 'Cinzel', serif; color: #d4af37; font-size: 24px; letter-spacing: 1px;
         border-bottom: 1px solid rgba(212, 175, 55, 0.25); padding-bottom: 14px; margin-bottom: 22px;
+        text-align: center;
     }
-    .section-sub { color: #9ca3af; font-size: 13px; margin-top: -14px; margin-bottom: 18px; line-height: 1.7; }
+    .section-sub { color: #9ca3af; font-size: 13px; margin-top: -14px; margin-bottom: 18px; line-height: 1.7; text-align: center; }
 
     /* ===== INFO / CONTENT CARDS ===== */
     .info-card {
@@ -224,7 +331,7 @@ st.markdown("""
     .mission-card h4 { font-family: 'Cinzel', serif; color: #d4af37; font-size: 14.5px; letter-spacing: 1.2px; margin-bottom: 12px; line-height: 1.5; }
     .mission-card p { color: #c3c8d1; font-size: 13px; line-height: 1.75; margin: 0; }
 
-    .chip-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+    .chip-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
     .chip {
         background: rgba(212,175,55,0.07); border: 1px solid rgba(212,175,55,0.3);
         border-radius: 30px; padding: 9px 18px; font-size: 12.5px; color: #e6c869; letter-spacing: 0.4px;
@@ -247,20 +354,31 @@ st.markdown("""
     }
     .contact-card .ic { font-size: 22px; }
     .contact-card .label { font-size: 10.5px; color: #9ca3af; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 3px; }
-    .contact-card .val { font-size: 14.5px; color: #f0f2f4; font-weight: 500; }
+    .contact-card .val { font-size: 14.5px; color: #f0f2f4; font-weight: 500; line-height: 1.55; }
 
-    /* ===== SIDEBAR MENU AKTIF GÖSTERGE ===== */
-    div[data-testid="stSidebar"] div[role="radiogroup"] label {
-        border-radius: 10px; padding: 9px 12px !important; letter-spacing: 0.3px;
-        transition: background 0.25s ease, padding-left 0.25s ease, border-color 0.25s ease;
-        border-left: 3px solid transparent;
+    .slogan-card {
+        background: linear-gradient(135deg, rgba(212,175,55,0.09), rgba(212,175,55,0.02));
+        border: 1px solid rgba(212,175,55,0.3);
+        border-radius: 16px; padding: 22px 20px; text-align: center; height: 100%;
+        transition: transform 0.3s ease, border-color 0.3s ease;
     }
-    div[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
-        background: rgba(212, 175, 55, 0.08); padding-left: 16px !important;
+    .slogan-card:hover { transform: translateY(-5px); border-color: rgba(212,175,55,0.7); }
+    .slogan-icon { font-size: 26px; margin-bottom: 10px; }
+    .slogan-title {
+        font-family: 'Cinzel', serif; color: #f3e3b3; font-size: 13.5px;
+        font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;
     }
-    div[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
-        background: linear-gradient(90deg, rgba(212,175,55,0.22), transparent 85%);
-        border-left: 3px solid #d4af37; padding-left: 16px !important;
+    .slogan-text {
+        font-family: 'Cormorant Garamond', serif; font-style: italic;
+        color: #c3c8d1; font-size: 14.5px; line-height: 1.7;
+    }
+
+    .country-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; justify-content: center; }
+    .country-chip {
+        background: rgba(212,175,55,0.05);
+        border: 1px solid rgba(212,175,55,0.25);
+        border-radius: 8px; padding: 7px 14px; font-size: 12px; color: #d1d5db;
+        letter-spacing: 0.5px;
     }
 
     /* ===== INPUTLAR ===== */
@@ -286,24 +404,59 @@ st.markdown("""
         transform: translateY(-2px); box-shadow: 0 10px 26px rgba(212,175,55,0.4);
     }
 
-    /* ===== DATAFRAME KAPSAYICI ===== */
     div[data-testid="stDataFrame"] {
         border: 1px solid rgba(212, 175, 55, 0.2);
         border-radius: 14px; overflow: hidden;
     }
 
-    /* ===== SIDEBAR ALTINDAKI KÜÇÜK MÜHÜR ROZETI ===== */
-    .sidebar-seal {
-        display: flex; align-items: center; justify-content: center; gap: 9px;
-        margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(212, 175, 55, 0.15);
+    /* ===== SOVEREIGN FOOTER SEAL ===== */
+    .sovereign-footer {
+        max-width: 560px;
+        margin: 30px auto 0 auto;
+        padding: 30px 28px 24px 28px;
+        text-align: center;
+        border-radius: 20px;
+        background: linear-gradient(160deg, rgba(35, 28, 15, 0.55) 0%, rgba(10, 10, 10, 0.6) 100%);
+        border: 1px solid rgba(212, 175, 55, 0.35);
+        box-shadow: 0 0 45px rgba(212, 175, 55, 0.12), 0 15px 40px rgba(0,0,0,0.5);
     }
-    .sidebar-seal .icon {
-        width: 28px; height: 28px; border-radius: 50%;
-        border: 1px solid rgba(212, 175, 55, 0.65); display: flex; align-items: center; justify-content: center;
-        font-size: 13px; background: radial-gradient(circle, rgba(212,175,55,0.22), transparent 70%);
+    .sovereign-seal {
+        width: 70px; height: 70px;
+        margin: 0 auto 14px auto;
+        border-radius: 50%;
+        border: 2px solid rgba(212, 175, 55, 0.75);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 30px;
+        background: radial-gradient(circle, rgba(212,175,55,0.22), transparent 70%);
+        box-shadow: 0 0 30px rgba(212, 175, 55, 0.4), inset 0 0 15px rgba(212,175,55,0.15);
+        animation: sealGlow 3.2s ease-in-out infinite;
     }
-    .sidebar-seal .txt { font-size: 8.5px; letter-spacing: 2px; color: #8b8f98; text-transform: uppercase; line-height: 1.4; text-align: left; }
-    .sidebar-seal .txt b { color: #d4af37; }
+    @keyframes sealGlow {
+        0%, 100% { box-shadow: 0 0 30px rgba(212, 175, 55, 0.4), inset 0 0 15px rgba(212,175,55,0.15); }
+        50% { box-shadow: 0 0 48px rgba(212, 175, 55, 0.65), inset 0 0 20px rgba(212,175,55,0.25); }
+    }
+    .sovereign-footer-badge {
+        font-family: 'Cinzel', serif;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728, #fbf5b7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+    }
+    .sovereign-footer-text {
+        font-size: 12px;
+        color: #cbd0d6;
+        letter-spacing: 0.6px;
+        line-height: 1.7;
+    }
+    .sovereign-footer-text b {
+        color: #f3e3b3;
+        font-family: 'Cinzel', serif;
+        letter-spacing: 1.5px;
+    }
 </style>
 
 <div class="sparkle-field">
@@ -325,23 +478,6 @@ st.markdown("""
 # 3. YARDIMCI FONKSİYONLAR
 # ============================================================
 
-def style_table(dframe: pd.DataFrame, zebra_limit: int = 1500):
-    working = dframe.reset_index(drop=True)
-    if len(working) > zebra_limit:
-        return working
-    try:
-        styled = working.style.hide(axis="index")
-    except Exception:
-        styled = working.style.hide_index()
-
-    def zebra(row):
-        if row.name % 2 == 0:
-            return ['background-color: rgba(255,255,255,0.035); color:#e8eaed;'] * len(row)
-        return ['background-color: rgba(0,0,0,0.28); color:#e8eaed;'] * len(row)
-
-    return styled.apply(zebra, axis=1)
-
-
 def render_info_card(rows):
     html = "<div class='info-card'>"
     for k, v in rows:
@@ -356,7 +492,7 @@ def render_chips(items):
 
 
 # ============================================================
-# 4. OTOMATİK VERİ DOSYASI BULMA (.ods / .xlsx)
+# 4. VERİ YÜKLEYİCİ
 # ============================================================
 @st.cache_data
 def load_ods_data():
@@ -367,14 +503,11 @@ def load_ods_data():
                 file_path = os.path.join(current_dir, file)
                 df = pd.read_excel(file_path, engine='odf' if file.endswith('.ods') else None)
                 if 'Yuzolcum' in df.columns:
-                    df['Yuzolcum_Sayısal'] = pd.to_numeric(
-                        df['Yuzolcum'].astype(str).str.replace(',', '.'), errors='coerce'
-                    )
+                    df['Yuzolcum_Sayısal'] = pd.to_numeric(df['Yuzolcum'].astype(str).str.replace(',', '.'), errors='coerce')
                 return df, file
             except Exception as e:
                 return str(e), None
     return None, None
-
 
 df, filename = load_ods_data()
 
@@ -458,57 +591,79 @@ SEKTORLER = [
     "🌉 Tünel, Köprü ve Viyadükler", "🏢 Bina ve Üstyapı İşleri", "♻️ Atık Yakma ve Geri Dönüşüm",
 ]
 
+CALISILAN_ULKELER = [
+    "🇩🇪 Almanya", "🇪🇸 İspanya", "🇸🇪 İsveç", "🇳🇴 Norveç", "🇷🇺 Rusya",
+    "🇰🇿 Kazakistan", "🇺🇿 Özbekistan", "🇹🇯 Tacikistan", "🇶🇦 Katar", "🇰🇼 Kuveyt",
+    "🇱🇾 Libya", "🇮🇶 Irak", "🇦🇫 Afganistan", "🇬🇪 Gürcistan", "🇧🇬 Bulgaristan",
+    "🇲🇦 Fas", "🇩🇿 Cezayir", "🇫🇮 Finlandiya", "🇬🇷 Yunanistan", "🌍 Diğer Ülkeler",
+]
 
-# ============================================================
-# 6. SOL NAVİGASYON
-# ============================================================
-with st.sidebar:
-    st.markdown("<div style='text-align: center; padding: 10px 0;'><span style='font-size: 40px;'>👑</span></div>", unsafe_allow_html=True)
-    st.markdown("<h2 style='text-align: center; font-family: Cinzel; color: #d4af37; letter-spacing: 2px; margin-top: -10px;'>TESKON</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; font-size: 10px; color: #6b7280; letter-spacing: 2px; text-transform: uppercase;'>Sovereign Executive Suite</p>", unsafe_allow_html=True)
-    st.divider()
+PERSONEL_DETAY = [
+    ("Proje Müdürü", 10),
+    ("Mühendis", 22),
+    ("Tasarım Uzmanı", 21),
+    ("İş Güvenliği Uzmanı", 7),
+    ("Formen", 24),
+    ("Kaynakçı & Usta", 49),
+]
 
-    sayfa = st.radio(
-        "KONTROL MERKEZİ",
-        [
-            "👑  Imperial Executive Suite",
-            "🏛️  Kurumsal & Tarihçe",
-            "💎  Zenith Data Intelligence",
-            "📜  İş Bitirme Sicili",
-            "🌐  Sektörler",
-            "🚜  Apex Filo",
-            "📞  Privé İletişim",
-        ]
-    )
+FAALIYET_ALANLARI = [
+    "📐 Proje ve Tasarım",
+    "⚙️ Mühendislik ve İmalat",
+    "🏗️ Yapım ve Bakım",
+    "🔑 Anahtar Teslim Projeler",
+    "👷 Personel Temini",
+    "🛠️ İşgücü Temini",
+]
 
-    st.divider()
-    st.markdown("""
-    <div style='background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 12px; padding: 15px; text-align: center;'>
-        <p style='font-size: 11px; color: #d4af37; font-weight: bold; margin: 0;'>SİSTEM DURUMU</p>
-        <p style='font-size: 10px; color: #10b981; margin: 5px 0 0 0;'>🟢 Veri Tabanı Aktif</p>
-    </div>
-
-    <div style='text-align: center; margin-top: 22px;'>
-        <p style='font-size: 8px; color: #6b7280; letter-spacing: 3px; text-transform: uppercase; margin: 0;'>ARCHITECTED & ENGINEERED BY</p>
-        <p style='font-size: 12px; font-family: "Cinzel", serif; color: #d4af37; font-weight: 900; letter-spacing: 3px; margin-top: 4px; text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);'>ÖNDER & ATLAS</p>
-    </div>
-
-    <div class="sidebar-seal">
-        <div class="icon">👑</div>
-        <div class="txt"><b>Sovereign Seal</b><br>TESKON © 2026</div>
-    </div>
-    """, unsafe_allow_html=True)
+SLOGANLAR = [
+    ("🏛️", "Köklü Bir Tarih", "25 yıla dayanan tecrübe, sağlam finansal güç, ticari ahlak ve insana verilen değer."),
+    ("🤝", "Bize Duyulan Güvenle", "Yaptığımız her işte insanlık için değer yaratmanın sorumluluğunu taşıyoruz."),
+    ("⚡", "Her Gün Azmimizin Ürünü", "Eserlere milyonlarca insan tanıklık ediyor. Başarı; akıllı ve planlı çalışmanın sonucudur."),
+    ("🎯", "Başarı Asla Tesadüf Değildir", "Planlı çalışma, disiplinli yönetim ve vizyoner liderlikle inşa edilir."),
+    ("✨", "Mükemmeli Sunmak", "Her projede en yüksek kaliteyi ve mühendislik standartlarını hedefliyoruz."),
+]
 
 
 # ============================================================
-# 7. ÜST DURUM ŞERİDİ
+# 6. HERO HEADER + YATAY NAVİGASYON (Sayfa Ortası)
+# ============================================================
+st.markdown("""
+<div class="hero-header fade-in">
+    <div class="hero-crown">👑</div>
+    <div class="hero-title">TESKON</div>
+    <div class="hero-sub">Sovereign Executive Suite</div>
+    <div class="hero-nav-label">✦ KONTROL MERKEZİ ✦</div>
+</div>
+""", unsafe_allow_html=True)
+
+sayfa = st.radio(
+    "nav",
+    [
+        "👑  Imperial Executive Suite",
+        "🏛️  Kurumsal & Tarihçe",
+        "💎  Zenith Data Intelligence",
+        "📜  İş Bitirme Sicili",
+        "🌐  Sektörler",
+        "🚜  Apex Filo",
+        "📞  Privé İletişim",
+    ],
+    horizontal=True,
+    label_visibility="collapsed",
+    key="main_nav"
+)
+
+# ============================================================
+# 7. ORTA DURUM ŞERİDİ
 # ============================================================
 now_str = datetime.now().strftime("%d.%m.%Y  •  %H:%M")
-sayfa_temiz = sayfa.split("  ", 1)[1] if "  " in sayfa else sayfa
 st.markdown(f"""
 <div class="status-strip fade-in">
-    <div><span class="pulse-dot"></span>{sayfa_temiz.upper()} <span class="dim">/ Black Edition v2</span></div>
+    <div><span class="pulse-dot"></span>SİSTEM AKTİF</div>
+    <div class="status-sep">•</div>
     <div class="dim">{now_str}</div>
+    <div class="status-sep">•</div>
+    <div class="dim">Black Edition v3</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -545,11 +700,23 @@ if sayfa == "👑  Imperial Executive Suite":
     with c1:
         st.markdown('<div class="diamond-card fade-in delay-1"><div class="diamond-icon">⏳</div><div class="diamond-value">25 YIL</div><div class="diamond-label">Köklü Miras</div></div>', unsafe_allow_html=True)
     with c2:
-        st.markdown('<div class="diamond-card fade-in delay-2"><div class="diamond-icon">🌍</div><div class="diamond-value">18+</div><div class="diamond-label">Global Sektör</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="diamond-card fade-in delay-2"><div class="diamond-icon">🌍</div><div class="diamond-value">22</div><div class="diamond-label">Ülkede Faaliyet</div></div>', unsafe_allow_html=True)
     with c3:
-        st.markdown('<div class="diamond-card fade-in delay-3"><div class="diamond-icon">🚛</div><div class="diamond-value">55+</div><div class="diamond-label">Apex Ağır Filo</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="diamond-card fade-in delay-3"><div class="diamond-icon">🚛</div><div class="diamond-value">67</div><div class="diamond-label">Araç / İş Makinesi</div></div>', unsafe_allow_html=True)
     with c4:
-        st.markdown('<div class="diamond-card fade-in delay-4"><div class="diamond-icon">📍</div><div class="diamond-value">YENİKENT</div><div class="diamond-label">Entegre Veri Seti</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="diamond-card fade-in delay-4"><div class="diamond-icon">📁</div><div class="diamond-value">160+</div><div class="diamond-label">Tamamlanan Proje</div></div>', unsafe_allow_html=True)
+
+    st.markdown("<br><h3 style='font-family: Cinzel; color: #d4af37; letter-spacing: 1px; font-size: 20px; text-align:center;'>KURUMSAL DEĞERLERİMİZ</h3>", unsafe_allow_html=True)
+    slog_cols = st.columns(5)
+    for i, (icon, title, text) in enumerate(SLOGANLAR):
+        with slog_cols[i % 5]:
+            st.markdown(f"""
+            <div class="slogan-card fade-in delay-{i+1}">
+                <div class="slogan-icon">{icon}</div>
+                <div class="slogan-title">{title}</div>
+                <div class="slogan-text">{text}</div>
+            </div>
+            """, unsafe_allow_html=True)
 
 
 # ============================================================
@@ -558,11 +725,11 @@ if sayfa == "👑  Imperial Executive Suite":
 elif sayfa == "🏛️  Kurumsal & Tarihçe":
     st.markdown("<div class='section-title fade-in'>🏛️ Kurumsal & Tarihçe</div>", unsafe_allow_html=True)
     st.markdown("""
-    <div class="imperial-sub" style="text-align:left; max-width:100%; margin-bottom:26px;">
+    <div class="imperial-sub" style="text-align:center; max-width:900px; margin:0 auto 26px auto;">
         Zorlu müteahhitlik faaliyetlerinin öncü kuruluşlarından biri olan TESKON Mühendislik'in temelleri 2005 yılında
-        atılmıştır. Türkiye, Ortadoğu, Kuzey Afrika, Kafkasya, Orta Asya, Doğu ve Orta Avrupa'da büyük başarılara imza
-        atan <b>uluslararası bir yüklenici</b> olarak; ağır inşaat işlerinden rafineri ve petrokimya tesislerine,
-        uydu kentlerden büyük endüstriyel tesislere kadar geniş bir yelpazede hizmet vermektedir.
+        <b>Ali ALTIBAĞ</b> tarafından atılmıştır. Türkiye, Ortadoğu, Kuzey Afrika, Kafkasya, Orta Asya, Doğu ve Orta
+        Avrupa'da büyük başarılara imza atan <b>uluslararası bir yüklenici</b> olarak; ağır inşaat işlerinden rafineri
+        ve petrokimya tesislerine, uydu kentlerden büyük endüstriyel tesislere kadar geniş bir yelpazede hizmet vermektedir.
     </div>
     """, unsafe_allow_html=True)
 
@@ -572,9 +739,13 @@ elif sayfa == "🏛️  Kurumsal & Tarihçe":
     with s2:
         st.markdown('<div class="diamond-card fade-in delay-2"><div class="diamond-icon">👥</div><div class="diamond-value">255</div><div class="diamond-label">Personel</div></div>', unsafe_allow_html=True)
     with s3:
-        st.markdown('<div class="diamond-card fade-in delay-3"><div class="diamond-icon">📁</div><div class="diamond-value">160</div><div class="diamond-label">Proje</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="diamond-card fade-in delay-3"><div class="diamond-icon">📁</div><div class="diamond-value">160+</div><div class="diamond-label">Proje</div></div>', unsafe_allow_html=True)
     with s4:
         st.markdown('<div class="diamond-card fade-in delay-4"><div class="diamond-icon">🚛</div><div class="diamond-value">67</div><div class="diamond-label">Araç</div></div>', unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color:#d4af37; font-family:Cinzel; font-size:16px; letter-spacing:1px; text-align:center;'>ANA FAALİYET ALANLARI</h4>", unsafe_allow_html=True)
+    render_chips(FAALIYET_ALANLARI)
 
     st.markdown("<br>", unsafe_allow_html=True)
     m1, m2, m3 = st.columns(3)
@@ -585,7 +756,7 @@ elif sayfa == "🏛️  Kurumsal & Tarihçe":
         st.markdown("""<div class="mission-card"><h4>BİZE DUYULAN GÜVENLE</h4>
         <p>Yaptığımız her işte, sunduğumuz her hizmette insanlık için değer yaratmanın sorumluluğunu taşıyoruz.</p></div>""", unsafe_allow_html=True)
     with m3:
-        st.markdown("""<div class="mission-card"><h4>HER GÜN AZMİMİZİN, KARARLILIĞIMIZIN ÜRÜNÜ</h4>
+        st.markdown("""<div class="mission-card"><h4>BAŞARI ASLA TESADÜF DEĞİLDİR</h4>
         <p>Eserlere milyonlarca insan tanıklık ediyor. Başarı; akıllı ve planlı bir çalışmanın sonucudur.</p></div>""", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -593,8 +764,9 @@ elif sayfa == "🏛️  Kurumsal & Tarihçe":
     with col_a:
         st.markdown("<h4 style='color:#d4af37; font-family:Cinzel; font-size:16px; letter-spacing:1px;'>FİRMA KÜNYESİ</h4>", unsafe_allow_html=True)
         render_info_card([
-            ("Firma Ünvanı", "Teskon Mühendislik LTD. ŞTİ."),
+            ("Firma Ünvanı", "TESKON Mühendislik Ltd. Şti."),
             ("Kurucu", "Ali ALTIBAĞ"),
+            ("Genel Müdür", "Ali ALTIBAĞ"),
             ("Kuruluş Yılı", "2005"),
             ("Kuruluş Yeri", "İstanbul"),
             ("Vergi Dairesi", "Kozyatağı"),
@@ -612,9 +784,30 @@ elif sayfa == "🏛️  Kurumsal & Tarihçe":
         """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color:#d4af37; font-family:Cinzel; font-size:16px; letter-spacing:1px; text-align:center;'>İNSAN KAYNAĞI — ÖNE ÇIKAN TEKNİK KADRO</h4>", unsafe_allow_html=True)
+    p_cols = st.columns(len(PERSONEL_DETAY))
+    for i, (rol, adet) in enumerate(PERSONEL_DETAY):
+        with p_cols[i]:
+            st.markdown(f"""
+            <div class="diamond-card fade-in delay-{i+1}" style="padding: 20px 12px;">
+                <div class="diamond-value" style="font-size: 26px;">{adet}</div>
+                <div class="diamond-label" style="font-size: 10px; line-height:1.4;">{rol}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color:#d4af37; font-family:Cinzel; font-size:16px; letter-spacing:1px; text-align:center;'>FAALİYET GÖSTERDİĞİMİZ ÜLKELER</h4>", unsafe_allow_html=True)
+    st.markdown(
+        "<div class='country-grid'>" +
+        "".join([f"<span class='country-chip'>{u}</span>" for u in CALISILAN_ULKELER]) +
+        "</div>",
+        unsafe_allow_html=True
+    )
+
+    st.markdown("<br>", unsafe_allow_html=True)
     with st.expander("🗂️ Organizasyon Yapısını Görüntüle"):
         st.markdown("""
-- **Genel Müdür / General Manager**
+- **Genel Müdür / General Manager — Ali ALTIBAĞ**
     - Asistan / Assistant
     - **Genel Müdür Yardımcısı (Teknik)**
         - Satın Alma Yönetimi
@@ -633,10 +826,10 @@ elif sayfa == "🏛️  Kurumsal & Tarihçe":
 
 
 # ============================================================
-# 10. SAYFA 3 — ZENITH DATA INTELLIGENCE (YENİKENT FİLTRELEME)
+# 10. SAYFA 3 — ZENITH DATA INTELLIGENCE
 # ============================================================
 elif sayfa == "💎  Zenith Data Intelligence":
-    st.markdown("<div class='section-title fade-in'>💎 Zenith Yenikent Akıllı Filtreleme & Sorgulama Engine</div>", unsafe_allow_html=True)
+    st.markdown("<div class='section-title fade-in'>💎 Zenith Akıllı Filtreleme & Sorgulama Engine</div>", unsafe_allow_html=True)
 
     if isinstance(df, pd.DataFrame):
         st.success(f"🟢 **Sistem Hazır:** `{filename}` yüklendi (Toplam **{len(df):,}** kayıt)")
@@ -698,15 +891,13 @@ elif sayfa == "💎  Zenith Data Intelligence":
         display_cols = [c for c in filtered_df.columns if not c.endswith('_Sayısal')]
 
         st.divider()
-        st.markdown(f"<h4 style='color: #10b981;'>🎯 Bulunan Kayıt Sayısı: {len(filtered_df):,} / {len(df):,}</h4>", unsafe_allow_html=True)
+        st.markdown(f"<h4 style='color: #10b981; text-align:center;'>🎯 Bulunan Kayıt Sayısı: {len(filtered_df):,} / {len(df):,}</h4>", unsafe_allow_html=True)
         st.dataframe(filtered_df[display_cols], use_container_width=True, height=550)
 
         csv_data = filtered_df[display_cols].to_csv(index=False, encoding='utf-8-sig').encode('utf-8-sig')
-        st.download_button("📥 Sonuçları İndir (Excel/CSV)", csv_data, "Yenikent_Filtreli.csv", "text/csv")
+        st.download_button("📥 Sonuçları İndir (Excel/CSV)", csv_data, "Filtreli_Sonuclar.csv", "text/csv")
     else:
-        st.error("⚠️ Klasörde ODS veya XLSX formatında veri dosyası bulunamadı! Lütfen verinizi klasöre yükleyin.")
-        if filename is None and df is not None:
-            st.caption(f"Teknik hata detayı: {df}")
+        st.error("⚠️ Klasörde ODS veya XLSX dosyası bulunamadı! Lütfen verinizi klasöre atın.")
 
 
 # ============================================================
@@ -732,7 +923,7 @@ elif sayfa == "📜  İş Bitirme Sicili":
     if sel_yer != "Tümü":
         filtered_is_df = filtered_is_df[filtered_is_df["Yurtiçi / Yurtdışı"] == sel_yer]
 
-    st.markdown(f"<h4 style='color:#10b981;'>Toplam {len(filtered_is_df)} kayıt gösteriliyor</h4>", unsafe_allow_html=True)
+    st.markdown(f"<h4 style='color:#10b981; text-align:center;'>Toplam {len(filtered_is_df)} kayıt gösteriliyor</h4>", unsafe_allow_html=True)
     st.dataframe(filtered_is_df, use_container_width=True, height=560, hide_index=True)
 
 
@@ -772,12 +963,36 @@ elif sayfa == "📞  Privé İletişim":
 
     st.markdown("""
     <div class="contact-card"><span class="ic">🏢</span>
-        <div><div class="label">Merkez Ofis</div>
-        <div class="val">Varyap Meridian Grand Tower, A Blok, Kat: 11, Daire: 112 Ataşehir / İstanbul</div></div>
+        <div><div class="label">İstanbul Merkez Ofis</div>
+        <div class="val">Barbaros Mahallesi, Al Zambak Sokak, Varyap Meridian Grand Tower<br>
+        A Blok, Kat: 11, Daire: 112 — Ataşehir / İstanbul / Türkiye</div></div>
     </div>
+
+    <div class="contact-card"><span class="ic">🏛️</span>
+        <div><div class="label">Ankara Ofis</div>
+        <div class="val">Cadde, Kat: 7, No: 25 — Çukurambar<br>
+        Çankaya / Ankara / Türkiye</div></div>
+    </div>
+
+    <div class="contact-card"><span class="ic">📞</span>
+        <div><div class="label">İstanbul Telefon</div>
+        <div class="val">+90 216 629 49 53</div></div>
+    </div>
+
+    <div class="contact-card"><span class="ic">📱</span>
+        <div><div class="label">Mobil</div>
+        <div class="val">+90 534 790 08 26</div></div>
+    </div>
+
+    <div class="contact-card"><span class="ic">☎️</span>
+        <div><div class="label">Ankara Telefon</div>
+        <div class="val">+90 312 284 34 84</div></div>
+    </div>
+
     <div class="contact-card"><span class="ic">🌐</span>
         <div><div class="label">Web Adresi</div><div class="val">www.teskonproje.com.tr</div></div>
     </div>
+
     <div class="contact-card"><span class="ic">✉️</span>
         <div><div class="label">e-Posta</div><div class="val">teskon@teskonproje.com.tr</div></div>
     </div>
@@ -785,7 +1000,18 @@ elif sayfa == "📞  Privé İletişim":
 
 
 # ============================================================
-# 15. ORTAK FOOTER
+# 15. SOVEREIGN FOOTER SEAL (Ortada)
 # ============================================================
-st.markdown("<br><hr style='border: 0; height: 1px; background: rgba(212,175,55,0.3);'><br>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; font-size: 11px; color: #6b7280;'>© 2026 TESKON Mühendislik • Architected & Developed by ÖNDER & ATLAS</p>", unsafe_allow_html=True)
+st.markdown("""
+<div class="sovereign-footer">
+    <div class="sovereign-seal">👑</div>
+    <div class="sovereign-footer-badge">Sovereign Seal of TESKON</div>
+    <div class="sovereign-footer-text">
+        ARCHITECTED &amp; ENGINEERED BY<br>
+        <b>ÖNDER &amp; ATLAS</b><br>
+        <span style="font-size: 10px; color: #6b7280; margin-top: 8px; display: inline-block;">
+            © 2026 TESKON Mühendislik Ltd. Şti.
+        </span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
