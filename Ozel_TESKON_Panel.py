@@ -502,15 +502,25 @@ def load_ods_data():
             try:
                 file_path = os.path.join(current_dir, file)
                 df = pd.read_excel(file_path, engine='odf' if file.endswith('.ods') else None)
+
+                # TÜM OBJECT SÜTUNLARI STRING'E ÇEVİR
+                for col in df.columns:
+                    if df[col].dtype == 'object':
+                        df[col] = df[col].fillna("").astype(str)
+                        df[col] = df[col].replace({"nan": "", "None": "", "NaN": ""})
+
                 if 'Yuzolcum' in df.columns:
-                    df['Yuzolcum_Sayısal'] = pd.to_numeric(df['Yuzolcum'].astype(str).str.replace(',', '.'), errors='coerce')
+                    df['Yuzolcum_Sayısal'] = pd.to_numeric(
+                        df['Yuzolcum'].astype(str).str.replace(',', '.'),
+                        errors='coerce'
+                    )
+
                 return df, file
             except Exception as e:
                 return str(e), None
     return None, None
 
 df, filename = load_ods_data()
-
 
 # ============================================================
 # 5. KURUMSAL SABİT VERİLER
@@ -892,7 +902,7 @@ elif sayfa == "💎  Zenith Data Intelligence":
 
         st.divider()
         st.markdown(f"<h4 style='color: #10b981; text-align:center;'>🎯 Bulunan Kayıt Sayısı: {len(filtered_df):,} / {len(df):,}</h4>", unsafe_allow_html=True)
-        st.dataframe(filtered_df[display_cols], use_container_width=True, height=550)
+        st.dataframe(filtered_df[display_cols], width='stretch', height=550)
 
         csv_data = filtered_df[display_cols].to_csv(index=False, encoding='utf-8-sig').encode('utf-8-sig')
         st.download_button("📥 Sonuçları İndir (Excel/CSV)", csv_data, "Filtreli_Sonuclar.csv", "text/csv")
@@ -924,7 +934,7 @@ elif sayfa == "📜  İş Bitirme Sicili":
         filtered_is_df = filtered_is_df[filtered_is_df["Yurtiçi / Yurtdışı"] == sel_yer]
 
     st.markdown(f"<h4 style='color:#10b981; text-align:center;'>Toplam {len(filtered_is_df)} kayıt gösteriliyor</h4>", unsafe_allow_html=True)
-    st.dataframe(filtered_is_df, use_container_width=True, height=560, hide_index=True)
+    st.dataframe(filtered_is_df, width='stretch', height=560, hide_index=True)
 
 
 # ============================================================
@@ -952,7 +962,7 @@ elif sayfa == "🚜  Apex Filo":
         st.markdown(f'<div class="diamond-card fade-in delay-2"><div class="diamond-icon">🗂️</div><div class="diamond-value">{len(filo_df)}</div><div class="diamond-label">Ekipman Kategorisi</div></div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.dataframe(filo_df, use_container_width=True, height=650, hide_index=True)
+    st.dataframe(filo_df, width='stretch', height=650, hide_index=True)
 
 
 # ============================================================
